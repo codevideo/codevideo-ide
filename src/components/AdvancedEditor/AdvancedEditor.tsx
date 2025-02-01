@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, JSX } from 'react';
 import { MouseOverlay } from './MouseOverlay/MouseOverlay';
 import Editor, { Monaco, loader } from '@monaco-editor/react';
-import { Resizable } from 're-resizable';
 import * as monaco from 'monaco-editor';
 import { getFileIcon } from './FileIcons/FileIcons';
 import { Terminal } from './Terminal/Terminal';
@@ -28,7 +27,7 @@ export function AdvancedEditor(props: AdvancedEditorProps) {
   const primaryLanguage = course.primaryLanguage;
 
   // codevideo-virtual-ide can get us the current code from the actions
-  const virtualIDE = new VirtualIDE({withInitialTerminal: true, withInitialAuthor: true});
+  const virtualIDE = new VirtualIDE({ withInitialTerminal: true, withInitialAuthor: true });
   virtualIDE.applyActions(actions);
   const courseSnapshot = virtualIDE.getCourseSnapshot();
 
@@ -150,22 +149,12 @@ export function AdvancedEditor(props: AdvancedEditorProps) {
         <div className='flex flex-1'>
           {/* File Tree Sidebar */}
           <div>
-            <Resizable
-              size={{ width: sidebarWidth, height: '100%' }}
-              onResizeStop={(e, direction, ref, d) => {
-                setSidebarWidth(sidebarWidth + d.width);
-              }}
-              minWidth={200}
-              maxWidth={400}
-              enable={{ right: true }}
-            >
-              <div className="h-full border-r border-slate-600">
-                <div className="p-4 border-b border-slate-600">
-                  <h3 className="text-slate-200 font-semibold">Explorer</h3>
-                </div>
-                <div className="p-2">{renderFileTree(fileStructure)}</div>
+            <div className="h-full border-r border-slate-600">
+              <div className="p-4 border-b border-slate-600">
+                <h3 className="text-slate-200 font-semibold">Explorer</h3>
               </div>
-            </Resizable>
+              <div className="p-2">{renderFileTree(fileStructure)}</div>
+            </div>
           </div>
 
           {/* Editor */}

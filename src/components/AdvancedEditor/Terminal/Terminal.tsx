@@ -75,19 +75,6 @@ export function Terminal(props: TerminalProps) {
             term.write(currentTerminalCommand);
             currentLineRef.current = currentTerminalCommand;
         }
-
-        // Handle window resize
-        const handleResize = () => {
-            // TODO: Resize xterm.js
-        };
-
-        window.addEventListener('resize', handleResize);
-
-        // Cleanup
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            term.dispose();
-        };
     }, [currentTerminalCommand]);
 
     return (

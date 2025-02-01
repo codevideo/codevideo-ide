@@ -19,7 +19,6 @@ export default [
       "@xterm/xterm",
       "xterm/css/xterm.css",
       "@monaco-editor/react",
-      "re-resizable",
       "monaco-editor",
       "monaco-themes/themes/Monokai.json"
     ]
@@ -45,7 +44,6 @@ export default [
       "@xterm/xterm",
       "xterm/css/xterm.css",
       "@monaco-editor/react",
-      "re-resizable",
       "monaco-editor",
       "monaco-themes/themes/Monokai.json"
     ]
