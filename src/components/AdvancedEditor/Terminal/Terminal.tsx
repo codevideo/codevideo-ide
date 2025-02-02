@@ -32,7 +32,7 @@ export function Terminal(props: TerminalProps) {
     }
 
     const currentTerminalCommand = getCurrentTerminalCommand();
-    console.log('currentTemrinalcommand is:', currentTerminalCommand)
+    console.log('currentTerminalCommand is:', currentTerminalCommand)
     const terminalRef = useRef<HTMLDivElement>(null);
     const xtermRef = useRef<XTerm | null>(null);
     const currentLineRef = useRef<string>('');

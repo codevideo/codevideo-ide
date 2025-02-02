@@ -1,5 +1,6 @@
 import { IAction, IFileStructure } from '@fullstackcraftllc/codevideo-types';
 import React, { useEffect, useRef, useState } from 'react';
+import { debounce } from '../../../utils/debounce';
 
 interface IMouseOverlayProps {
   mouseVisible: boolean;
@@ -13,6 +14,23 @@ export const MouseOverlay = (props: IMouseOverlayProps) => {
   const { mouseVisible, actions, actionIndex, fileStructure, className } = props;
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const overlayRef = useRef<HTMLDivElement>(null);
+  const dimensionsRef = useRef({ width: 0, height: 0 });
+
+  // Cache window dimensions on mount and resize
+  useEffect(() => {
+    const updateDimensions = () => {
+      dimensionsRef.current = {
+        width: window.innerWidth,
+        height: window.innerHeight
+      };
+    };
+    
+    updateDimensions();
+    const handleResize = debounce(updateDimensions, 250);
+    window.addEventListener('resize', handleResize);
+    
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     if (!actionIndex) return;
@@ -21,20 +39,19 @@ export const MouseOverlay = (props: IMouseOverlayProps) => {
 
     let newPosition = { x: mousePosition.x, y: mousePosition.y };
 
-    // TODO: think maybe from a different way - we should be able to retrieve the x and y coordinates directly from state from the editor!
-    // For this switch, let the MouseActions from the codevideo-types package guide you
     switch (currentAction.name) {
       case 'mouse-click-terminal':
-        newPosition = { x: window.innerWidth / 2, y: window.innerHeight - 75 };
+        newPosition = { 
+          x: dimensionsRef.current.width / 2, 
+          y: dimensionsRef.current.height - 75 
+        };
         break;
       case 'mouse-click-editor':
-        // Get middle of editor div
-        newPosition = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        newPosition = { 
+          x: dimensionsRef.current.width / 2, 
+          y: dimensionsRef.current.height / 2 
+        };
         break;
-      // case 'click-file':
-      // use the file structure to get the middle x and y position of the file
-
-      // Add more cases as needed
     }
 
     setMousePosition(newPosition);
@@ -56,8 +73,8 @@ export const MouseOverlay = (props: IMouseOverlayProps) => {
           d="M 0,0 L 0,20 L 4.5,15.5 L 8.75,23 L 11,22 L 6.75,15 L 13.75,15 Z"
           fill="black"
           stroke="white"
-          stroke-width="1.5"
-          stroke-linejoin="rounded"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
         />
       </svg>
     </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { IDE } from "@fullstackcraftllc/codevideo-ide"
 import { IAction } from '@fullstackcraftllc/codevideo-types';
+import { ErrorBoundary } from './components/ErrorBoundary.tsx';
 
 const tutorialActions: IAction[] = [
   // Initial setup explanation
@@ -139,6 +140,7 @@ function App() {
       {/* buttons to increment and decrement */}
       <button onClick={() => setActionIndex(actionIndex - 1)}>Previous</button>
       <button onClick={() => setActionIndex(actionIndex + 1)}>Next</button>
+      <ErrorBoundary>
       <IDE
         mode="step"
         actions={tutorialActions}
@@ -151,6 +153,7 @@ function App() {
           lessons: []
         }}
       />
+      </ErrorBoundary>
     </>
   );
 }

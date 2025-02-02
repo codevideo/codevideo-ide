@@ -1,7 +1,7 @@
 {
   "name": "@fullstackcraftllc/codevideo-ide",
-  "version": "1.0.16",
-  "description": "A React TypeScript component for a fully auditable, drivable, and replayable ide.",
+  "version": "1.0.19",
+  "description": "A React TypeScript component for a fully auditable, drivable, and replayable IDE.",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

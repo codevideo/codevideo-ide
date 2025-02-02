@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect, JSX } from 'react';
 import { MouseOverlay } from './MouseOverlay/MouseOverlay';
 import Editor, { Monaco, loader } from '@monaco-editor/react';
 import * as monaco from 'monaco-editor';
-import { getFileIcon } from './FileIcons/FileIcons';
 import { Terminal } from './Terminal/Terminal';
 import Monokai from "monaco-themes/themes/Monokai.json";
 import { GUIMode, IAction, ICourse, IFileStructure } from '@fullstackcraftllc/codevideo-types';
 import { VirtualIDE } from '@fullstackcraftllc/codevideo-virtual-ide';
+import { debounce } from '../../utils/debounce';
+import { FileExplorer } from './FileExplorer';
 
 interface AdvancedEditorProps {
   mode: GUIMode;
@@ -99,28 +100,26 @@ export function AdvancedEditor(props: AdvancedEditorProps) {
     }
   }, [currentHighlightCoordinates]);
 
+  // resize observer needs to be in its own useEffect or we get infinite resizing when consumed
+  useEffect(() => {
+    if (!monacoEditorRef.current) return;
+    
+    const resizeObserver = new ResizeObserver(debounce(() => {
+      if (monacoEditorRef.current) {
+        monacoEditorRef.current.layout();
+      }
+    }, 100));
+  
+    const editorElement = monacoEditorRef.current.getDomNode();
+    if (editorElement) {
+      resizeObserver.observe(editorElement);
+    }
+  
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, []);
 
-  const renderFileTree = (structure: IFileStructure, path: string = ''): JSX.Element[] => {
-    return Object.entries(structure).map(([name, item]) => {
-      const fullPath = path ? `${path}/${name}` : name;
-      const isDirectory = item.type === 'directory';
-
-      return (
-        <div key={fullPath} className="ml-4">
-          <div
-            className={`flex items-center gap-2 p-1 rounded hover:bg-slate-700 cursor-pointer ${currentFile === fullPath ? 'bg-slate-700' : ''
-              }`}
-          >
-            <span className="text-slate-400">
-              {isDirectory ? '📁' : getFileIcon(name)}
-            </span>
-            <span className="text-slate-200">{name}</span>
-          </div>
-          {isDirectory && item.children && renderFileTree(item.children, fullPath)}
-        </div>
-      );
-    });
-  };
 
   return (
     <div className="flex flex-col h-full bg-slate-800 rounded-lg overflow-hidden relative">
@@ -147,15 +146,8 @@ export function AdvancedEditor(props: AdvancedEditorProps) {
 
       <div className="flex flex-1 flex-col">
         <div className='flex flex-1'>
-          {/* File Tree Sidebar */}
-          <div>
-            <div className="h-full border-r border-slate-600">
-              <div className="p-4 border-b border-slate-600">
-                <h3 className="text-slate-200 font-semibold">Explorer</h3>
-              </div>
-              <div className="p-2">{renderFileTree(fileStructure)}</div>
-            </div>
-          </div>
+          {/* File Explorer */}
+          <FileExplorer currentFile={currentFile} fileStructure={fileStructure}/>
 
           {/* Editor */}
           <div className="flex-1 relative">
@@ -163,7 +155,7 @@ export function AdvancedEditor(props: AdvancedEditorProps) {
               value={readOnly ? currentCode : undefined}
               defaultLanguage={primaryLanguage}
               options={{
-                automaticLayout: true,
+                automaticLayout: false,
                 minimap: { enabled: true },
                 scrollBeyondLastLine: false,
                 fontSize: 14,
@@ -191,6 +183,7 @@ export function AdvancedEditor(props: AdvancedEditorProps) {
           </div>
         </div>
       </div>
+      {/* Terminal */}
       <div className="bg-[#1e1e1e] border-t border-gray-700 h-[150px]">
         <div className="flex items-center justify-between p-1 bg-[#252526] border-b border-gray-700">
           <span className="text-gray-300 text-sm px-2">Terminal</span>
